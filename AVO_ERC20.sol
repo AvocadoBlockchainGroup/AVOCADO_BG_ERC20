@@ -1,12 +1,14 @@
 // SPDX-License-Identifier: MIT
 
-// AVOCADO BLOCKCHAIN Group 
+/**
 
-// https://avo.center
+AVOCADO BLOCKCHAIN Group 
 
+Website: https://avo.center
+
+*/
 
 pragma solidity ^0.8.0;
-
 
 abstract contract Context {
     function _msgSender() internal view virtual returns (address) {
@@ -20,7 +22,6 @@ abstract contract Context {
 
 
 pragma solidity ^0.8.0;
-
 
 abstract contract Ownable is Context {
     address private _owner;
@@ -63,9 +64,8 @@ abstract contract Ownable is Context {
 
 pragma solidity ^0.8.0;
 
-
 interface IERC20 {
-
+    
     event Transfer(address indexed from, address indexed to, uint256 value);
 
     event Approval(address indexed owner, address indexed spender, uint256 value);
@@ -90,9 +90,8 @@ interface IERC20 {
 
 pragma solidity ^0.8.0;
 
-
 interface IERC20Metadata is IERC20 {
-
+    
     function name() external view returns (string memory);
 
     function symbol() external view returns (string memory);
@@ -102,7 +101,6 @@ interface IERC20Metadata is IERC20 {
 
 
 pragma solidity ^0.8.0;
-
 
 contract ERC20 is Context, IERC20, IERC20Metadata {
     mapping(address => uint256) private _balances;
@@ -197,8 +195,9 @@ contract ERC20 is Context, IERC20, IERC20Metadata {
         require(fromBalance >= amount, "ERC20: transfer amount exceeds balance");
         unchecked {
             _balances[from] = fromBalance - amount;
+
+            _balances[to] += amount;
         }
-        _balances[to] += amount;
 
         emit Transfer(from, to, amount);
 
@@ -211,7 +210,10 @@ contract ERC20 is Context, IERC20, IERC20Metadata {
         _beforeTokenTransfer(address(0), account, amount);
 
         _totalSupply += amount;
-        _balances[account] += amount;
+        unchecked {
+            
+            _balances[account] += amount;
+        }
         emit Transfer(address(0), account, amount);
 
         _afterTokenTransfer(address(0), account, amount);
@@ -226,8 +228,9 @@ contract ERC20 is Context, IERC20, IERC20Metadata {
         require(accountBalance >= amount, "ERC20: burn amount exceeds balance");
         unchecked {
             _balances[account] = accountBalance - amount;
+            
+            _totalSupply -= amount;
         }
-        _totalSupply -= amount;
 
         emit Transfer(account, address(0), amount);
 
@@ -273,27 +276,9 @@ contract ERC20 is Context, IERC20, IERC20Metadata {
     ) internal virtual {}
 }
 
+pragma solidity ^0.8.9;
 
-pragma solidity ^0.8.0;
-
-
-abstract contract ERC20Burnable is Context, ERC20 {
-    
-    function burn(uint256 amount) public virtual {
-        _burn(_msgSender(), amount);
-    }
-
-    function burnFrom(address account, uint256 amount) public virtual {
-        _spendAllowance(account, _msgSender(), amount);
-        _burn(account, amount);
-    }
-}
-
-
-pragma solidity ^0.8.4;
-
-
-contract AvocadoBG is ERC20, ERC20Burnable, Ownable {
+contract AVOCADOBG is ERC20, Ownable {
     constructor() ERC20("AVOCADO BG", "AVO") {
         _mint(msg.sender, 1200000000 * 10 ** decimals());
     }
